@@ -5,6 +5,8 @@ on:
     push:
       branches:
         - main
+    schedule:
+      - cron: '0 0 1 * *'
 jobs:
     DEV:
         runs-on: ubuntu-latest
@@ -31,12 +33,6 @@ jobs:
                 echo "${{ secrets.DEVOPS_DB_ENV }}" > DevOps/env/db.env
                 echo "${{ secrets.DEVOPS_PGADMIN_ENV }}" > DevOps/env/pgadmin.env
                 echo "${{ secrets.DEVOPS_APP_ENV }}" > DevOps/backend/.env
-            - name: Print first line of each .env to confirm
-              run: |
-                head -n 1 DevOps/env/backend.env
-                head -n 1 DevOps/env/db.env
-                head -n 1 DevOps/env/pgadmin.env
-                head -n 1 DevOps/backend/.env
             
             - name: Take files from Chatbot-MLOps
               uses: actions/checkout@v4
@@ -56,6 +52,27 @@ jobs:
                 repository: Alicanayhn/Chatbot-Retrain
                 token: ${{ secrets.PAT }}
                 path: Retrain
+            - name: Save Retrain's environments
+              run: |
+                mkdir Retrain/env
+                echo "${{ secrets.RETRAIN_ENV }}" > Retrain/env/.env
+            
+            - name: Create docker network
+              run: docker network create mlflow-shared-net
+            
+            - name: Docker compose up for MLOps
+              if: github.event_name != 'schedule'
+              run: docker compose -f MLOps/compose.yaml up --detach
+            
+            - name: Docker compose up for DevOps
+              if: github.event_name != 'schedule'
+              run: docker compose up -f DevOps/compose.yaml --detach
+            
+            - name: Docker compose up for Retrain
+              if: github.event_name == 'schedule' || github.event_name == 'worfklow_dispatch'
+              run: docker compose -f Retrain/compose.yaml
+            
+            
             
             
             
