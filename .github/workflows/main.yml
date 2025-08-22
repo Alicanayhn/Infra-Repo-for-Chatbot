@@ -2,7 +2,9 @@ name: Actions for Chatbot in infra-repo
 
 on:
     workflow_dispatch:
-    
+    push:
+      branches:
+        - main
 jobs:
     DEV:
         runs-on: ubuntu-latest
@@ -24,12 +26,17 @@ jobs:
             - name: Save DevOps's environments
               run: |
                 mkdir DevOps/env
-                
+
                 echo "${{ secrets.DEVOPS_BACKEND_ENV }}" > DevOps/env/backend.env
                 echo "${{ secrets.DEVOPS_DB_ENV }}" > DevOps/env/db.env
                 echo "${{ secrets.DEVOPS_PGADMIN_ENV }}" > DevOps/env/pgadmin.env
                 echo "${{ secrets.DEVOPS_APP_ENV }}" > DevOps/backend/.env
-
+            - name: Print first line of each .env to confirm
+              run: |
+                head -n 1 DevOps/env/backend.env
+                head -n 1 DevOps/env/db.env
+                head -n 1 DevOps/env/pgadmin.env
+                head -n 1 DevOps/backend/.env
             
             - name: Take files from Chatbot-MLOps
               uses: actions/checkout@v4
