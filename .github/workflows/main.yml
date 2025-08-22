@@ -1,3 +1,55 @@
+name: Actions for Chatbot in infra-repo
 
+on:
+    workflow_dispatch:
+    
+jobs:
+    DEV:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Take files from Infra-repo
+              uses: actions/checkout@v4
+            
+            - name: Create folder for Chatbot-dev-mlflow-retrain
+              run: |
+                mkdir DevOps MLOps Retrain
+            
+            - name: Take files from Chatbot-DevOps
+              uses: actions/checkout@v4
+              with:
+                repository: Alicanayhn/Chatbot-DevOps
+                token: ${{ secrets.PAT }}
+                path: DevOps
+            
+            - name: Save DevOps's environments
+              run: |
+                mkdir DevOps/env
+                echo "${{ secrets.DEVOPS_BACKEND_ENV }}" > DevOps/env/backend.env
+                echo "${{ secrets.DEVOPS_DB_ENV }}" > DevOps/env/db.env
+                echo "${{ secrets.DEVOPS_PGADMIN_ENV }}" > DevOps/env/pgadmin.env
+                echo "${{ secrets.DEVOPS_APP_ENV }}" > DevOps/backend/.env
 
+            
+            - name: Take files from Chatbot-MLOps
+              uses: actions/checkout@v4
+              with:
+                repository: Alicanayhn/Chatbot-MLOps
+                token: ${{ secrets.PAT }}
+                path: MLOps
+            - name: Save MLOps's environments
+              run: |
+                mkdir MLOps/env
+                echo "${{ secrets.MLOPS_MLFLOW_ENV }}" > MLOps/env/mlflow.env
+                echo "${{ secrets.MLOPS_DB_ENV }}" > MLOps/env/db.env
+            
+            - name: Take files from Chatbot-Retrain
+              uses: actions/checkout@v4
+              with:
+                repository: Alicanayhn/Chatbot-Retrain
+                token: ${{ secrets.PAT }}
+                path: Retrain
+            
+            
+            
+            
 
