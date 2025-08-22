@@ -24,6 +24,7 @@ jobs:
             - name: Save DevOps's environments
               run: |
                 mkdir DevOps/env
+                
                 echo "${{ secrets.DEVOPS_BACKEND_ENV }}" > DevOps/env/backend.env
                 echo "${{ secrets.DEVOPS_DB_ENV }}" > DevOps/env/db.env
                 echo "${{ secrets.DEVOPS_PGADMIN_ENV }}" > DevOps/env/pgadmin.env
