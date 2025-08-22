@@ -66,11 +66,11 @@ jobs:
             
             - name: Docker compose up for DevOps
               if: github.event_name != 'schedule'
-              run: docker compose up -f DevOps/compose.yaml --detach
+              run: docker compose up -f DevOps/compose.yaml up --detach
             
             - name: Docker compose up for Retrain
               if: github.event_name == 'schedule' || github.event_name == 'worfklow_dispatch'
-              run: docker compose -f Retrain/compose.yaml
+              run: docker compose -f Retrain/compose.yaml up --detach
             
             
             
